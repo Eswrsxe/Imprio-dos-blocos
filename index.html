@@ -117,7 +117,8 @@
         // URL do OAuth2 do Discord (Configure com o SEU Client ID)
         // Note o redirect_uri apontando para a sua futura API
         const clientId = '1535446090843955220'; 
-        const redirectUri = encodeURIComponent('https://SEU-SITE-VERCEL.vercel.app/api/callback');
+        // 👇 Agora ele aponta para a API que criamos no Passo 2!
+        const redirectUri = encodeURIComponent('https://imprio-dos-blocos.vercel.app/api/callback');
         const discordAuthUrl = `https://discord.com/oauth2/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=identify`;
 
         // Verifica se o usuário acabou de voltar do Discord com Sucesso ou Erro
