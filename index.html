@@ -1,147 +1,436 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verificação - Império dos Blocos</title>
-    <style>
-        /* CSS Embutido para facilitar */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Verificação — Império dos Blocos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --crimson:      #9E1B32;
+    --crimson-dark: #6E1023;
+    --black:        #0B0B0D;
+    --charcoal:     #17191C;
+    --steel:        #2C2F33;
+    --steel-line:   #3a3d42;
+    --grey-light:   #B5B7BA;
+    --white:        #FFFFFF;
+    --gold:         #D4AF37;
+    --discord:      #5865F2;
+    --discord-hover:#4752C4;
+    --ok:           #43b581;
+    --err:          #f04747;
+  }
 
-        body {
-            background-color: #1a1a1a;
-            color: #ffffff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-image: radial-gradient(circle at center, #2a2a2a 0%, #111 100%);
-        }
+  *{ margin:0; padding:0; box-sizing:border-box; }
 
-        .container {
-            background-color: #2C2F33;
-            padding: 40px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            border-top: 6px solid #9E1B32; /* Carmesim */
-            max-width: 450px;
-            width: 90%;
-            transition: transform 0.3s ease;
-        }
+  html,body{ height:100%; }
 
-        h1 {
-            color: #D4AF37; /* Dourado */
-            margin-bottom: 15px;
-            font-size: 28px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+  body{
+    font-family:'Rajdhani', 'Segoe UI', sans-serif;
+    background: var(--black);
+    color: var(--white);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 24px;
+    overflow-x:hidden;
+    position:relative;
+  }
 
-        p {
-            font-size: 16px;
-            line-height: 1.6;
-            color: #b9bbbe;
-            margin-bottom: 25px;
-        }
+  /* --- backdrop: pixel-grid + crimson glow, kept subtle --- */
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background-image:
+      linear-gradient(rgba(158,27,50,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(158,27,50,0.05) 1px, transparent 1px);
+    background-size: 34px 34px;
+    mask-image: radial-gradient(circle at 50% 40%, rgba(0,0,0,0.9) 0%, transparent 72%);
+    -webkit-mask-image: radial-gradient(circle at 50% 40%, rgba(0,0,0,0.9) 0%, transparent 72%);
+    pointer-events:none;
+    z-index:0;
+  }
 
-        .btn-discord {
-            background-color: #5865F2; /* Cor oficial do Discord */
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            transition: background-color 0.2s, transform 0.2s;
-            width: 100%;
-        }
+  body::after{
+    content:"";
+    position:fixed;
+    top:-20%; left:50%;
+    width:900px; height:900px;
+    transform:translateX(-50%);
+    background: radial-gradient(circle, rgba(158,27,50,0.22) 0%, rgba(158,27,50,0) 65%);
+    pointer-events:none;
+    z-index:0;
+  }
 
-        .btn-discord:hover {
-            background-color: #4752C4;
-            transform: translateY(-2px);
-        }
+  .page{
+    position:relative;
+    z-index:1;
+    width:100%;
+    max-width:460px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    animation: rise .7s cubic-bezier(.16,.9,.35,1) both;
+  }
 
-        .loader {
-            display: none;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #9E1B32;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
+  @keyframes rise{
+    from{ opacity:0; transform:translateY(18px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+  /* --- header / crest --- */
+  .brand{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    margin-bottom:28px;
+  }
 
-        #status-message {
-            margin-top: 20px;
-            font-weight: bold;
-        }
-        
-        .success { color: #43b581; font-size: 20px;}
-        .error { color: #f04747; }
-    </style>
+  .crest{
+    width:56px; height:56px;
+    margin-bottom:14px;
+    position:relative;
+  }
+
+  .crest svg{ width:100%; height:100%; display:block; filter: drop-shadow(0 4px 14px rgba(158,27,50,0.55)); }
+
+  .crown-blocks{
+    display:flex;
+    gap:3px;
+    justify-content:center;
+    margin-bottom:6px;
+  }
+  .crown-blocks span{
+    width:6px; height:6px;
+    background: var(--gold);
+    display:block;
+  }
+  .crown-blocks span:nth-child(2){ height:10px; margin-top:-4px; }
+  .crown-blocks span:nth-child(4){ height:10px; margin-top:-4px; }
+  .crown-blocks span:nth-child(3){ height:13px; margin-top:-7px; }
+
+  .brand h1{
+    font-family:'Cinzel', serif;
+    font-weight:900;
+    font-size: clamp(22px, 6vw, 28px);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: linear-gradient(180deg, #ffffff 0%, #d8d9db 60%, #B5B7BA 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    text-align:center;
+  }
+
+  .brand .eyebrow{
+    font-family:'Rajdhani', sans-serif;
+    font-weight:600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-size: 11.5px;
+    color: var(--crimson);
+    margin-top:8px;
+  }
+
+  /* --- card --- */
+  .card{
+    width:100%;
+    background: linear-gradient(180deg, rgba(44,47,51,0.72) 0%, rgba(23,25,28,0.85) 100%);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--steel-line);
+    border-top: 3px solid var(--crimson);
+    border-radius: 14px;
+    padding: 36px 30px 32px;
+    text-align:center;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.55), 0 0 0 1px rgba(158,27,50,0.06);
+    position:relative;
+    overflow:hidden;
+  }
+
+  /* faint block-notch corners, minecraft nod, very subtle */
+  .card::before, .card::after{
+    content:"";
+    position:absolute;
+    width:8px; height:8px;
+    background: rgba(158,27,50,0.35);
+    top:0;
+  }
+  .card::before{ left:0; }
+  .card::after{ right:0; }
+
+  .card h2{
+    font-family:'Cinzel', serif;
+    font-weight:700;
+    font-size: 19px;
+    letter-spacing: 0.5px;
+    margin-bottom: 14px;
+    color: var(--white);
+  }
+
+  .card p{
+    font-size: 15.5px;
+    line-height: 1.6;
+    color: var(--grey-light);
+    margin-bottom: 10px;
+  }
+
+  .card p.muted{
+    font-size: 13.5px;
+    color: #83868b;
+    margin-bottom: 26px;
+  }
+
+  /* --- discord button --- */
+  .btn-discord{
+    width:100%;
+    background: var(--discord);
+    color: #fff;
+    border:none;
+    padding: 15px 20px;
+    font-family:'Rajdhani', sans-serif;
+    font-size: 16px;
+    font-weight:700;
+    letter-spacing: 0.4px;
+    border-radius: 9px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    box-shadow: 0 8px 20px rgba(88,101,242,0.35);
+    transition: background-color .2s ease, transform .2s ease, box-shadow .2s ease;
+  }
+
+  .btn-discord:hover{
+    background: var(--discord-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgba(88,101,242,0.45);
+  }
+
+  .btn-discord:active{ transform: translateY(0); }
+
+  .btn-discord svg{ width:20px; height:20px; flex-shrink:0; }
+
+  .btn-secondary{
+    width:100%;
+    background: transparent;
+    color: var(--white);
+    border: 1px solid var(--steel-line);
+    padding: 13px 20px;
+    font-family:'Rajdhani', sans-serif;
+    font-size: 15px;
+    font-weight:600;
+    border-radius: 9px;
+    cursor:pointer;
+    transition: border-color .2s ease, background-color .2s ease;
+    margin-top: 12px;
+  }
+
+  .btn-secondary:hover{
+    border-color: var(--crimson);
+    background: rgba(158,27,50,0.08);
+  }
+
+  /* --- loader --- */
+  .loader-wrap{
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    gap:16px;
+    padding: 6px 0 2px;
+  }
+
+  .loader{
+    width:38px; height:38px;
+    border-radius:50%;
+    border: 3px solid rgba(158,27,50,0.18);
+    border-top-color: var(--crimson);
+    animation: spin 0.9s linear infinite;
+  }
+
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+
+  .loader-wrap .status-text{
+    font-size: 14.5px;
+    color: var(--grey-light);
+    letter-spacing: 0.3px;
+  }
+
+  /* --- success / error states --- */
+  .state{
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    animation: pop .5s cubic-bezier(.2,.9,.3,1.2) both;
+  }
+
+  @keyframes pop{
+    from{ opacity:0; transform:scale(.92); }
+    to{ opacity:1; transform:scale(1); }
+  }
+
+  .state-icon{
+    width:56px; height:56px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:18px;
+    font-size: 26px;
+  }
+
+  .state-icon.success{
+    background: rgba(67,181,129,0.12);
+    border: 1px solid rgba(67,181,129,0.4);
+    color: var(--ok);
+  }
+
+  .state-icon.error{
+    background: rgba(240,71,71,0.12);
+    border: 1px solid rgba(240,71,71,0.4);
+    color: var(--err);
+  }
+
+  .state h2.success{ color: var(--ok); }
+  .state h2.error{ color: var(--err); }
+
+  footer{
+    margin-top: 22px;
+    font-size: 12px;
+    letter-spacing: 0.4px;
+    color: #5b5e63;
+    text-align:center;
+  }
+
+  @media (max-width:380px){
+    .card{ padding: 28px 20px 26px; }
+    .brand h1{ font-size: 21px; letter-spacing: 1.4px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+</style>
 </head>
 <body>
 
-    <div class="container" id="main-card">
-        <h1>🏰 IMPÉRIO DOS BLOCOS</h1>
-        <p id="desc-text">Para liberar seu acesso completo ao servidor, precisamos vincular sua conta do Discord de forma segura.</p>
-        
-        <button class="btn-discord" id="btn-verify">Autorizar com o Discord</button>
-        
-        <div class="loader" id="loader"></div>
-        <div id="status-message"></div>
+  <div class="page">
+
+    <div class="brand">
+      <div class="crown-blocks">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <div class="crest">
+        <svg viewBox="0 0 56 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M28 2 L52 12 V30 C52 46 42 58 28 62 C14 58 4 46 4 30 V12 Z"
+                fill="url(#shieldGrad)" stroke="#D4AF37" stroke-width="1.4"/>
+          <rect x="22" y="20" width="12" height="12" fill="#0B0B0D" opacity="0.35"/>
+          <rect x="26" y="24" width="4" height="4" fill="#D4AF37" opacity="0.85"/>
+          <defs>
+            <linearGradient id="shieldGrad" x1="4" y1="2" x2="52" y2="62" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#9E1B32"/>
+              <stop offset="1" stop-color="#4a0c17"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <h1>Império dos Blocos</h1>
+      <div class="eyebrow">Portal oficial de verificação</div>
     </div>
 
-    <!-- JavaScript Responsável pela Lógica de URL e Status -->
-    <script>
-        const btnVerify = document.getElementById('btn-verify');
-        const loader = document.getElementById('loader');
-        const statusMsg = document.getElementById('status-message');
-        const descText = document.getElementById('desc-text');
+    <div class="card" id="main-card">
 
-        // URL do OAuth2 do Discord (Configure com o SEU Client ID)
-        // Note o redirect_uri apontando para a sua futura API
-        const clientId = '1535446090843955220'; 
-        // 👇 Agora ele aponta para a API que criamos no Passo 2!
-        const redirectUri = encodeURIComponent('https://imprio-dos-blocos.vercel.app/api/callback');
-        const discordAuthUrl = `https://discord.com/oauth2/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=identify`;
+      <!-- initial state -->
+      <div id="initial-state">
+        <h2>Verificação do Servidor</h2>
+        <p>Para acessar completamente o Império dos Blocos, você precisa verificar sua conta do Discord.</p>
+        <p class="muted">A verificação é segura e utiliza a autenticação oficial do Discord.</p>
 
-        // Verifica se o usuário acabou de voltar do Discord com Sucesso ou Erro
-        const urlParams = new URLSearchParams(window.location.search);
-        const status = urlParams.get('status');
+        <button class="btn-discord" id="btn-verify">
+          <svg viewBox="0 0 127.14 96.36" fill="currentColor"><path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"/></svg>
+          Autorizar com o Discord
+        </button>
+      </div>
 
-        if (status === 'success') {
-            btnVerify.style.display = 'none';
-            descText.style.display = 'none';
-            statusMsg.innerHTML = '<span class="success">✅ Verificação Concluída!</span><br><br>Seus cargos foram entregues. Pode voltar para o servidor!';
-        } else if (status === 'error') {
-            statusMsg.innerHTML = '<span class="error">❌ Ocorreu um erro na verificação. Tente novamente.</span>';
-        }
+      <!-- loading -->
+      <div class="loader-wrap" id="loader-wrap">
+        <div class="loader"></div>
+        <div class="status-text" id="loading-text">Redirecionando para o Discord...</div>
+      </div>
 
-        // Ação do Botão
-        btnVerify.addEventListener('click', () => {
-            btnVerify.style.display = 'none';
-            loader.style.display = 'block';
-            statusMsg.innerText = 'Redirecionando para o Discord...';
-            
-            // Vai para o Discord pedir permissão
-            window.location.href = discordAuthUrl;
-        });
-    </script>
+      <!-- success -->
+      <div class="state" id="success-state">
+        <div class="state-icon success">✓</div>
+        <h2 class="success">Verificação concluída!</h2>
+        <p>Sua conta foi verificada com sucesso.</p>
+        <p class="muted">O cargo de verificado já foi entregue.</p>
+        <a class="btn-secondary" href="discord://" style="display:block; text-decoration:none;">Voltar para o Discord</a>
+      </div>
+
+      <!-- error -->
+      <div class="state" id="error-state">
+        <div class="state-icon error">✕</div>
+        <h2 class="error">Não foi possível concluir a verificação</h2>
+        <p class="muted">Ocorreu um problema durante o processo de verificação.</p>
+        <button class="btn-discord" id="btn-retry" style="background:var(--crimson); box-shadow:0 8px 20px rgba(158,27,50,0.35);">
+          Tentar novamente
+        </button>
+      </div>
+
+    </div>
+
+    <footer>Império dos Blocos • Verificação protegida via Discord OAuth2</footer>
+  </div>
+
+  <script>
+    const btnVerify   = document.getElementById('btn-verify');
+    const btnRetry     = document.getElementById('btn-retry');
+    const loaderWrap    = document.getElementById('loader-wrap');
+    const loadingText   = document.getElementById('loading-text');
+    const initialState  = document.getElementById('initial-state');
+    const successState  = document.getElementById('success-state');
+    const errorState    = document.getElementById('error-state');
+
+    // URL do OAuth2 do Discord (Configure com o SEU Client ID)
+    // Note o redirect_uri apontando para a sua futura API
+    const clientId = '1535446090843955220';
+    // 👇 Agora ele aponta para a API que criamos no Passo 2!
+    const redirectUri = encodeURIComponent('https://imprio-dos-blocos.vercel.app/api/callback');
+    const discordAuthUrl = `https://discord.com/oauth2/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=identify`;
+
+    function goToDiscord(){
+      initialState.style.display = 'none';
+      errorState.style.display = 'none';
+      loaderWrap.style.display = 'flex';
+      loadingText.textContent = 'Redirecionando para o Discord...';
+      window.location.href = discordAuthUrl;
+    }
+
+    btnVerify.addEventListener('click', () => {
+      loadingText.textContent = 'Conectando ao Discord...';
+      loaderWrap.style.display = 'flex';
+      initialState.style.display = 'none';
+      setTimeout(goToDiscord, 350);
+    });
+
+    btnRetry.addEventListener('click', goToDiscord);
+
+    // Verifica se o usuário acabou de voltar do Discord com Sucesso ou Erro
+    const urlParams = new URLSearchParams(window.location.search);
+    const status = urlParams.get('status');
+
+    if (status === 'success') {
+      initialState.style.display = 'none';
+      successState.style.display = 'flex';
+    } else if (status === 'error') {
+      initialState.style.display = 'none';
+      errorState.style.display = 'flex';
+    }
+  </script>
 </body>
 </html>
